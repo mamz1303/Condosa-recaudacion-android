@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recaudacion.network.CollectionsApi
@@ -66,7 +67,29 @@ class RegisterViewModel : ViewModel() {
                 _errorMessage.value = "Error de red. Inténtelo de nuevo más tarde."
             } catch (e: HttpException) {
                 if (e.code() == 500) {
-                    _errorMessage.value = "El nro de documento no existe."
+                    _errorMessage.value = "El ruc no existe."
+                } else {
+                    _errorMessage.value = "Ha ocurrido un error. Inténtelo de nuevo más tarde."
+                }
+            }
+        }
+    }
+
+    fun getMantenimientoReciboPorNroRecibo(nroRecibo : TextFieldValue){
+        viewModelScope.launch {
+            try {
+                val result = CollectionsApi.retrofitService.getMantenimientoRecibo(nroRecibo.text.toUpperCase())
+                Log.d("getMantReciboPorRecibo"," ${result}")
+                registerUiState = registerUiState.copy(
+                    idMantRecibo = result.idMantRecibo.toInt(),
+                    estadoRecibo = result.estadoRecibo,
+                    importe = result.importe
+                )
+            } catch (e: IOException) {
+                _errorMessage.value = "Error de red. Inténtelo de nuevo más tarde."
+            } catch (e: HttpException) {
+                if (e.code() == 500) {
+                    _errorMessage.value = "El nro de recibo no existe."
                 } else {
                     _errorMessage.value = "Ha ocurrido un error. Inténtelo de nuevo más tarde."
                 }

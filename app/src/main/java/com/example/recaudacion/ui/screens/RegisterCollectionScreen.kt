@@ -106,7 +106,7 @@ fun RegisterCollection1PageScreen( registerViewModel: RegisterViewModel, navCont
                     currentIndex++
                 }
             }
-            2 -> FormReceipt(navController, currentIndex) {
+            2 -> FormReceipt(registerViewModel,navController, currentIndex) {
                 if (currentIndex < 3) {
                     currentIndex++
                 }
@@ -371,12 +371,9 @@ fun FormNroDocumento(registerViewModel: RegisterViewModel, navController: NavCon
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
                 onClick = {
-                    /*
                     if(registerViewModel.registerUiState.idCuenta != 0){
                         onNext()
-                    }*/
-
-                    onNext()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color(0xFF000080)),
                 modifier = Modifier
@@ -587,7 +584,9 @@ fun FormRuc(registerViewModel: RegisterViewModel, navController: NavController, 
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
                 onClick = {
-                    onNext()
+                    if(registerViewModel.registerUiState.idCuentaPredio != 0){
+                        onNext()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color(0xFF000080)),
                 modifier = Modifier
@@ -609,7 +608,7 @@ fun FormRuc(registerViewModel: RegisterViewModel, navController: NavController, 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormReceipt(navController: NavController, currentIndex: Int, onNext: () -> Unit){
+fun FormReceipt(registerViewModel: RegisterViewModel, navController: NavController, currentIndex: Int, onNext: () -> Unit){
     FormStatus(imageRes = R.drawable.barradeprogreso3, title = "Información del recibo")
     Column(
         modifier = Modifier
@@ -619,14 +618,14 @@ fun FormReceipt(navController: NavController, currentIndex: Int, onNext: () -> U
     ) {
 
         val nroRecibo = remember { mutableStateOf(TextFieldValue()) }
-        val estadoRecibo = remember { mutableStateOf(TextFieldValue()) }
-        val importe = remember { mutableStateOf(TextFieldValue()) }
+        val estadoRecibo = registerViewModel.registerUiState.estadoRecibo
+        val importe = registerViewModel.registerUiState.importe
 
         TextField(
             label = { Text(text = "N° recibo") },
             value = nroRecibo.value,
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             onValueChange = { nroRecibo.value = it },
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.Transparent,
@@ -641,7 +640,7 @@ fun FormReceipt(navController: NavController, currentIndex: Int, onNext: () -> U
         Spacer(modifier = Modifier.height(25.dp))
         Button(
             onClick = {
-                // Acción al hacer clic en el botón
+                registerViewModel.getMantenimientoReciboPorNroRecibo(nroRecibo.value)
             },
             modifier = Modifier.width(200.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000080))
@@ -664,11 +663,11 @@ fun FormReceipt(navController: NavController, currentIndex: Int, onNext: () -> U
         Spacer(modifier = Modifier.height(35.dp))
         TextField(
             label = { Text(text = "Estado del recibo") },
-            value = estadoRecibo.value,
+            value = estadoRecibo,
             singleLine = true,
             enabled = false,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            onValueChange = { estadoRecibo.value = it },
+            onValueChange = {  },
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
@@ -682,11 +681,11 @@ fun FormReceipt(navController: NavController, currentIndex: Int, onNext: () -> U
 
         TextField(
             label = { Text(text = "Importe") },
-            value = importe.value,
+            value = importe.toString(),
             singleLine = true,
             enabled = false,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            onValueChange = { importe.value = it },
+            onValueChange = {  },
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
@@ -698,10 +697,18 @@ fun FormReceipt(navController: NavController, currentIndex: Int, onNext: () -> U
         )
         Spacer(modifier = Modifier.height(25.dp))
 
+        // Observa si hay un mensaje de error y muestra una alerta en consecuencia
+        val errorMessage = registerViewModel.errorMessage
+        if (errorMessage.value.isNotEmpty()) {
+            mostrarAlerta("Error", errorMessage = errorMessage.value,registerViewModel)
+        }
+
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
                 onClick = {
-                    onNext()
+                    if(registerViewModel.registerUiState.idMantRecibo != 0){
+                        onNext()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color(0xFF000080)),
                 modifier = Modifier

@@ -29,6 +29,10 @@ interface CollectionsApiService {
     @GET("predio/predio_ruc/{ruc}")
     suspend fun getPredio(@Path("ruc") ruc: String): Predio
 
+    @GET("mant_recibo/nro_recibo/{recibo}")
+    suspend fun getMantenimientoRecibo(@Path("recibo") recibo: String): MantenimientoRecibo
+
+
 }
 
 object CollectionsApi {
