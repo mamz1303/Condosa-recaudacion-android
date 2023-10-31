@@ -1,6 +1,5 @@
 package com.example.recaudacion.ui.screens
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,7 +17,7 @@ import java.io.IOException
     object Loading : CollectionsUiState
 }*/
 
-class MainMenuViewModel : ViewModel() {
+class MenuPrincipalViewModel : ViewModel() {
     var collectionsUiState by mutableStateOf(RecaudacionState())
         private set
 
@@ -30,14 +29,14 @@ class MainMenuViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val listResult = CollectionsApi.retrofitService.getCollections()
-                Log.d("GetCollections","se trajo la data")
+                //Log.d("GetCollections","se trajo la data")
                 collectionsUiState = collectionsUiState.copy(
                     recaudaciones = listResult
                 )
             } catch (e: IOException) {
-                Log.d("GetCollections","Error : ${e}")
+                //Log.d("GetCollections","Error : ${e}")
             } catch (e: HttpException){
-
+                //Log.d("GetCollections","Error : ${e}")
             }
         }
     }

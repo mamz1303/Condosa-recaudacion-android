@@ -2,7 +2,6 @@ package com.example.recaudacion.network
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.math.BigDecimal
 
 @Serializable
 data class InformacionPersonal(

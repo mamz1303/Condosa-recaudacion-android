@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recaudacion.network.CollectionsApi
@@ -15,7 +14,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class RegisterViewModel : ViewModel() {
+class RegistroViewModel : ViewModel() {
     var registerUiState by mutableStateOf(RegistroState())
         private set
 

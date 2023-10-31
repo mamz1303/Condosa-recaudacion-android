@@ -1,6 +1,5 @@
 package com.example.recaudacion.ui.screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -57,7 +56,7 @@ import com.example.recaudacion.navigation.AppScreens
 
 
 @Composable
-fun RegisterCollection1PageScreen( registerViewModel: RegisterViewModel, navController: NavController) {
+fun RegisterCollection1PageScreen(registroViewModel: RegistroViewModel, navController: NavController) {
     var currentIndex by remember { mutableStateOf(0) }
 
     Column(
@@ -96,27 +95,27 @@ fun RegisterCollection1PageScreen( registerViewModel: RegisterViewModel, navCont
         }
 
         when (currentIndex) {
-            0 -> FormNroDocumento(registerViewModel ,navController, currentIndex) {
+            0 -> FormNroDocumento(registroViewModel ,navController, currentIndex) {
                 if (currentIndex < 3) {
                     currentIndex++
                 }
             }
-            1 -> FormRuc(registerViewModel ,navController, currentIndex) {
+            1 -> FormRuc(registroViewModel ,navController, currentIndex) {
                 if (currentIndex < 3) {
                     currentIndex++
                 }
             }
-            2 -> FormReceipt(registerViewModel,navController, currentIndex) {
+            2 -> FormReceipt(registroViewModel,navController, currentIndex) {
                 if (currentIndex < 3) {
                     currentIndex++
                 }
             }
-            3 -> FormCollection(navController ,currentIndex) {
+            3 -> FormCollection(registroViewModel ,navController ,currentIndex) {
                 if (currentIndex < 3) {
                     currentIndex++
                 }
             }
-            else -> FormNroDocumento(registerViewModel ,navController, currentIndex) {
+            else -> FormNroDocumento(registroViewModel ,navController, currentIndex) {
                 if (currentIndex < 3) {
                     currentIndex++
                 }
@@ -226,7 +225,7 @@ fun FormStatus(imageRes: Int, title: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormNroDocumento(registerViewModel: RegisterViewModel, navController: NavController, currentIndex: Int, onNext: () -> Unit){
+fun FormNroDocumento(registroViewModel: RegistroViewModel, navController: NavController, currentIndex: Int, onNext: () -> Unit){
     FormStatus(imageRes = R.drawable.barradeprogreso1, title = "Información personal")
     Column(
         modifier = Modifier
@@ -244,10 +243,10 @@ fun FormNroDocumento(registerViewModel: RegisterViewModel, navController: NavCon
          */
 
         val nroDocumento = remember { mutableStateOf(TextFieldValue()) }
-        var nombre = registerViewModel.registerUiState.nombre
-        var banco = registerViewModel.registerUiState.banco
-        var moneda = registerViewModel.registerUiState.moneda
-        var cuenta = registerViewModel.registerUiState.nroCuenta
+        var nombre = registroViewModel.registerUiState.nombre
+        var banco = registroViewModel.registerUiState.banco
+        var moneda = registroViewModel.registerUiState.moneda
+        var cuenta = registroViewModel.registerUiState.nroCuenta
 
         TextField(
             label = { Text(text = "Nro. Documento") },
@@ -268,7 +267,7 @@ fun FormNroDocumento(registerViewModel: RegisterViewModel, navController: NavCon
         Spacer(modifier = Modifier.height(25.dp))
         Button(
             onClick = {
-                registerViewModel.getCuentaPorNroDocumento(nroDocumento.value)
+                registroViewModel.getCuentaPorNroDocumento(nroDocumento.value)
             },
             modifier = Modifier.width(200.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000080))
@@ -362,16 +361,16 @@ fun FormNroDocumento(registerViewModel: RegisterViewModel, navController: NavCon
         Spacer(modifier = Modifier.height(25.dp))
 
         // Observa si hay un mensaje de error y muestra una alerta en consecuencia
-        val errorMessage = registerViewModel.errorMessage
+        val errorMessage = registroViewModel.errorMessage
         if (errorMessage.value.isNotEmpty()) {
-            mostrarAlerta("Error", errorMessage = errorMessage.value,registerViewModel)
+            mostrarAlerta("Error", errorMessage = errorMessage.value,registroViewModel)
         }
 
 
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
                 onClick = {
-                    if(registerViewModel.registerUiState.idCuenta != 0){
+                    if(registroViewModel.registerUiState.idCuenta != 0){
                         onNext()
                     }
                 },
@@ -393,14 +392,14 @@ fun FormNroDocumento(registerViewModel: RegisterViewModel, navController: NavCon
 }
 
 @Composable
-fun mostrarAlerta(titulo: String ,errorMessage: String,registerViewModel: RegisterViewModel) {
+fun mostrarAlerta(titulo: String, errorMessage: String, registroViewModel: RegistroViewModel) {
     AlertDialog(
         onDismissRequest = { /* No hacemos nada al cerrar */ },
         title = { Text(text = titulo) },
         text = { Text(text = errorMessage) },
         confirmButton = {
             TextButton(onClick = {
-                registerViewModel.clearErrorMessage() }) {
+                registroViewModel.clearErrorMessage() }) {
                 Text("Aceptar")
             }
         }
@@ -410,7 +409,7 @@ fun mostrarAlerta(titulo: String ,errorMessage: String,registerViewModel: Regist
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormRuc(registerViewModel: RegisterViewModel, navController: NavController, currentIndex: Int, onNext: () -> Unit){
+fun FormRuc(registroViewModel: RegistroViewModel, navController: NavController, currentIndex: Int, onNext: () -> Unit){
     FormStatus(imageRes = R.drawable.barradeprogreso2, title = "Información del predio")
     Column(
         modifier = Modifier
@@ -420,12 +419,12 @@ fun FormRuc(registerViewModel: RegisterViewModel, navController: NavController, 
     ) {
 
         val ruc = remember { mutableStateOf(TextFieldValue()) }
-        var nombrePredio = registerViewModel.registerUiState.nombrePredio
-        var direccion = registerViewModel.registerUiState.direccion
-        var tipoDePredio = registerViewModel.registerUiState.tipoPredio
-        var nroCuentaPredio = registerViewModel.registerUiState.nroCuentaPredio
-        var tipoDeAutorizacion = registerViewModel.registerUiState.tipoDeAutorizacion
-        var estado = registerViewModel.registerUiState.estado
+        var nombrePredio = registroViewModel.registerUiState.nombrePredio
+        var direccion = registroViewModel.registerUiState.direccion
+        var tipoDePredio = registroViewModel.registerUiState.tipoPredio
+        var nroCuentaPredio = registroViewModel.registerUiState.nroCuentaPredio
+        var tipoDeAutorizacion = registroViewModel.registerUiState.tipoDeAutorizacion
+        var estado = registroViewModel.registerUiState.estado
 
         TextField(
             label = { Text(text = "RUC") },
@@ -446,7 +445,7 @@ fun FormRuc(registerViewModel: RegisterViewModel, navController: NavController, 
         Spacer(modifier = Modifier.height(25.dp))
         Button(
             onClick = {
-                registerViewModel.getPredioPorRuc(ruc.value)
+                registroViewModel.getPredioPorRuc(ruc.value)
             },
             modifier = Modifier.width(200.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000080))
@@ -576,15 +575,15 @@ fun FormRuc(registerViewModel: RegisterViewModel, navController: NavController, 
         Spacer(modifier = Modifier.height(25.dp))
 
         // Observa si hay un mensaje de error y muestra una alerta en consecuencia
-        val errorMessage = registerViewModel.errorMessage
+        val errorMessage = registroViewModel.errorMessage
         if (errorMessage.value.isNotEmpty()) {
-            mostrarAlerta("Error", errorMessage = errorMessage.value,registerViewModel)
+            mostrarAlerta("Error", errorMessage = errorMessage.value,registroViewModel)
         }
 
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
                 onClick = {
-                    if(registerViewModel.registerUiState.idCuentaPredio != 0){
+                    if(registroViewModel.registerUiState.idCuentaPredio != 0){
                         onNext()
                     }
                 },
@@ -608,7 +607,7 @@ fun FormRuc(registerViewModel: RegisterViewModel, navController: NavController, 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormReceipt(registerViewModel: RegisterViewModel, navController: NavController, currentIndex: Int, onNext: () -> Unit){
+fun FormReceipt(registroViewModel: RegistroViewModel, navController: NavController, currentIndex: Int, onNext: () -> Unit){
     FormStatus(imageRes = R.drawable.barradeprogreso3, title = "Información del recibo")
     Column(
         modifier = Modifier
@@ -618,8 +617,8 @@ fun FormReceipt(registerViewModel: RegisterViewModel, navController: NavControll
     ) {
 
         val nroRecibo = remember { mutableStateOf(TextFieldValue()) }
-        val estadoRecibo = registerViewModel.registerUiState.estadoRecibo
-        val importe = registerViewModel.registerUiState.importe
+        val estadoRecibo = registroViewModel.registerUiState.estadoRecibo
+        val importe = registroViewModel.registerUiState.importe
 
         TextField(
             label = { Text(text = "N° recibo") },
@@ -640,7 +639,7 @@ fun FormReceipt(registerViewModel: RegisterViewModel, navController: NavControll
         Spacer(modifier = Modifier.height(25.dp))
         Button(
             onClick = {
-                registerViewModel.getMantenimientoReciboPorNroRecibo(nroRecibo.value)
+                registroViewModel.getMantenimientoReciboPorNroRecibo(nroRecibo.value)
             },
             modifier = Modifier.width(200.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000080))
@@ -698,15 +697,15 @@ fun FormReceipt(registerViewModel: RegisterViewModel, navController: NavControll
         Spacer(modifier = Modifier.height(25.dp))
 
         // Observa si hay un mensaje de error y muestra una alerta en consecuencia
-        val errorMessage = registerViewModel.errorMessage
+        val errorMessage = registroViewModel.errorMessage
         if (errorMessage.value.isNotEmpty()) {
-            mostrarAlerta("Error", errorMessage = errorMessage.value,registerViewModel)
+            mostrarAlerta("Error", errorMessage = errorMessage.value,registroViewModel)
         }
 
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
                 onClick = {
-                    if(registerViewModel.registerUiState.idMantRecibo != 0){
+                    if(registroViewModel.registerUiState.idMantRecibo != 0){
                         onNext()
                     }
                 },
@@ -730,7 +729,7 @@ fun FormReceipt(registerViewModel: RegisterViewModel, navController: NavControll
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormCollection(navController: NavController, currentIndex: Int, onNext: () -> Unit) {
+fun FormCollection(registroViewModel: RegistroViewModel, navController: NavController, currentIndex: Int, onNext: () -> Unit) {
     FormStatus(imageRes = R.drawable.barradeprogreso4, title = "Información de la recaudación")
     val context = LocalContext.current.applicationContext
 
@@ -743,8 +742,8 @@ fun FormCollection(navController: NavController, currentIndex: Int, onNext: () -
 
         val nroOperacion = remember { mutableStateOf(TextFieldValue()) }
         val fecha = remember { mutableStateOf(TextFieldValue()) }
-        val tipoDeModa = remember { mutableStateOf(TextFieldValue()) }
-        val importe = remember { mutableStateOf(TextFieldValue()) }
+        val tipoDeMoneda = registroViewModel.registerUiState.moneda
+        val importe = registroViewModel.registerUiState.importe
         val estado = remember { mutableStateOf(TextFieldValue()) }
         val observacion = remember { mutableStateOf(TextFieldValue()) }
 
@@ -786,11 +785,11 @@ fun FormCollection(navController: NavController, currentIndex: Int, onNext: () -
 
         TextField(
             label = { Text(text = "Tipo de Moneda") },
-            value = tipoDeModa.value,
+            value = tipoDeMoneda.toString(),
             singleLine = true,
             enabled = false,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            onValueChange = { tipoDeModa.value = it },
+            onValueChange = { },
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
@@ -804,11 +803,11 @@ fun FormCollection(navController: NavController, currentIndex: Int, onNext: () -
 
         TextField(
             label = { Text(text = "Importe") },
-            value = importe.value,
+            value = importe.toString()   ,
             singleLine = true,
             enabled = false,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            onValueChange = { importe.value = it },
+            onValueChange = {  },
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
@@ -818,24 +817,24 @@ fun FormCollection(navController: NavController, currentIndex: Int, onNext: () -
                 .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
 
         )
-        Spacer(modifier = Modifier.height(25.dp))
-
-        TextField(
-            label = { Text(text = "Estado") },
-            value = estado.value,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            onValueChange = { estado.value = it },
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
-
-        )
+//        Spacer(modifier = Modifier.height(25.dp))
+//
+//        TextField(
+//            label = { Text(text = "Estado") },
+//            value = estado.value,
+//            singleLine = true,
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+//            onValueChange = { estado.value = it },
+//            colors = TextFieldDefaults.textFieldColors(
+//                containerColor = Color.Transparent,
+//                focusedIndicatorColor = Color.Transparent,
+//                unfocusedIndicatorColor = Color.Transparent
+//            ),
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+//
+//        )
         Spacer(modifier = Modifier.height(25.dp))
 
         TextField(

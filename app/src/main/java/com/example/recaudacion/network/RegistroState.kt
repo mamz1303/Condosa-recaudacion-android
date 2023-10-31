@@ -1,7 +1,5 @@
 package com.example.recaudacion.network
 
-import kotlinx.serialization.SerialName
-
 data class RegistroState(
     // Informacion Personal
     val idCuenta: Int = 0,

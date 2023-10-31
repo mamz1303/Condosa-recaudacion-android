@@ -39,7 +39,7 @@ import com.example.recaudacion.navigation.AppScreens
 import com.example.recaudacion.network.Recaudacion
 
 @Composable
-fun MainMenuPageScreen(collectionsViewModel: MainMenuViewModel, navController: NavController, modifier: Modifier = Modifier) {
+fun MainMenuPageScreen(collectionsViewModel: MenuPrincipalViewModel, navController: NavController, modifier: Modifier = Modifier) {
     val state = collectionsViewModel.collectionsUiState
 
     when {
@@ -252,3 +252,4 @@ fun CardElevation(index: Int, recaudacion : Recaudacion) {
         }
     }
 }
+

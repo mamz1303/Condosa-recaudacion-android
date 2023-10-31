@@ -1,8 +1,5 @@
 package com.example.recaudacion.network
 
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.converter.moshi.MoshiConverterFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -31,7 +28,6 @@ interface CollectionsApiService {
 
     @GET("mant_recibo/nro_recibo/{recibo}")
     suspend fun getMantenimientoRecibo(@Path("recibo") recibo: String): MantenimientoRecibo
-
 
 }
 
