@@ -1,5 +1,6 @@
 package com.example.recaudacion.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,18 +17,30 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,13 +52,29 @@ import com.example.recaudacion.navigation.AppScreens
 import com.example.recaudacion.network.Recaudacion
 
 @Composable
-fun MainMenuPageScreen(collectionsViewModel: MenuPrincipalViewModel, navController: NavController, modifier: Modifier = Modifier) {
+fun MainMenuPageScreen(
+    collectionsViewModel: MenuPrincipalViewModel,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     val state = collectionsViewModel.collectionsUiState
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
+    var filtroActual by remember { mutableStateOf("Sin ningún filtro") }
+
+    // Nuevo estado inmutable para las recaudaciones ordenadas
+    val recaudacionesFiltradas = remember { mutableStateOf<List<Recaudacion>>(emptyList()) }
+
+    // Actualiza la lista ordenada al inicio y cuando cambia la lista original
+    LaunchedEffect(state.recaudaciones) {
+        recaudacionesFiltradas.value = state.recaudaciones
+    }
 
     when {
         state.recaudaciones.isEmpty() -> {
             LoadingScreen(modifier = modifier.fillMaxSize())
         }
+
         state.recaudaciones.isNotEmpty() -> {
             LazyColumn(
                 modifier = Modifier
@@ -106,21 +135,83 @@ fun MainMenuPageScreen(collectionsViewModel: MenuPrincipalViewModel, navControll
                 }
 
                 item {
+                    Spacer(modifier = Modifier.height(15.dp))
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp, 0.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row {
+                            Text(text="Filtro: ", fontWeight = FontWeight.Bold)
+                            Text(text = filtroActual, softWrap = true, modifier = Modifier.padding(end = 10.dp))
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentSize(Alignment.TopEnd)
+                        ) {
+                            Button(onClick = { expanded = !expanded }) {
+                                Icon(
+                                    painter= painterResource(id = R.drawable.filter),
+                                    contentDescription = "More",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Menor a mayor según importe") },
+                                    onClick = {
+                                        recaudacionesFiltradas.value = state.recaudaciones.sortedBy { it.importe }
+                                        filtroActual = "Menor a mayor según importe"
+                                        Toast.makeText(context, "Ordenado de menor a mayor según importe", Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Mayor a menor según importe") },
+                                    onClick = {
+                                        recaudacionesFiltradas.value = state.recaudaciones.sortedByDescending { it.importe }
+                                        filtroActual = "Mayor a menor según importe"
+                                        Toast.makeText(context, "Ordenado de mayor a menor según importe", Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Mostrar solo los rechazados") },
+                                    onClick = {
+                                        recaudacionesFiltradas.value = state.recaudaciones.filter { it.estado == "Rechazado" }
+                                        filtroActual = "Mostrar solo los rechazados"
+                                        Toast.makeText(context, "Rechazados", Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                item {
                     Spacer(modifier = Modifier.height(20.dp))
                 }
 
-                itemsIndexed(state.recaudaciones) { index,item ->
-                    CardElevation(index,item)
+                // Usa sortedRecaudaciones en lugar de state.recaudaciones
+                itemsIndexed(recaudacionesFiltradas.value) { index, item ->
+                    CardElevation(index, item)
                     Spacer(modifier = Modifier.height(10.dp))
                 }
             }
         }
+
         else -> {
-            ErrorScreen( modifier = modifier.fillMaxSize())
+            ErrorScreen(modifier = modifier.fillMaxSize())
         }
     }
-
-    /**/
 }
 
 @Composable
@@ -147,7 +238,7 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun CardElevation(index: Int, recaudacion : Recaudacion) {
+fun CardElevation(index: Int, recaudacion: Recaudacion) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFDAE1E7)),
