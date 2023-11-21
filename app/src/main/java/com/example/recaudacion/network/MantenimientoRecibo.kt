@@ -2,7 +2,7 @@ package com.example.recaudacion.network
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
+/*===========*/
 @Serializable
 data class MantenimientoRecibo(
     @SerialName("idMantRecibo") val idMantRecibo: Int,
