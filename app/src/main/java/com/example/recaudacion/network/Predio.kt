@@ -3,6 +3,7 @@ package com.example.recaudacion.network
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+// El predio es .....
 @Serializable
 data class Predio(
     @SerialName("idCuentaPredio") val idCuentaPredio: Int,
